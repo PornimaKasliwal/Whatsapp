@@ -4,6 +4,7 @@ const cors = require("cors")
 const cookieParser = require("cookie-parser")
 const { userProtected } = require("./middleware/protected.middleware")
 const { app, httpserver } = require("./socket/socket")
+const path = require("path")
 require("dotenv").config({})
 
 
@@ -11,13 +12,19 @@ require("dotenv").config({})
 // const app = express()
 
 app.use(express.json())
-app.use(cors({ origin: "http://localhost:5173", credentials: true }))
+app.use(express.static("dist"))
+// app.use(cors({ origin: "http://localhost:5173", credentials: true }))
+app.use(cors({ origin: "https://whatsapp-94w8.onrender.com", credentials: true }))
 app.use(cookieParser())
 
 
 app.use("/api/auth", require("./routes/auth.routes"))
 app.use("/api/user", userProtected, require("./routes/user.routers"))
 app.use("/api/chat", userProtected, require("./routes/chat.route"))
+app.use((req, res, next) => {
+    res.sendFile(path.join(__dirname, "dist ", "index.html"))
+})
+
 
 // app.use("*", (req, res) => {
 //     res.status(404).json({ message: "Resource Not Found" })
